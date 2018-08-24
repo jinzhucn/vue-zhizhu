@@ -1,115 +1,115 @@
 <template>
-    <div>
-        <el-form :inline="true" class="selectForm">
-            <el-select
-              v-model="searchForm.schoolName"
-              placeholder="筛选学校信息"
-              @change="selectSchool"
-              clearable>
-                <el-option
-                  v-for="item in searchForm.schoolOptions"
-                  :key="item"
-                  :value="item">
-                </el-option>
-            </el-select>
-            <el-select
-              v-model="searchForm.building"
-              placeholder="筛选寝室楼信息"
-              @change="selectBuilding"
-              clearable>
-                <el-option
-                  v-for="item in searchForm.buildingOptions"
-                  :key="item"
-                  :value="item">
-                </el-option>
-            </el-select>
-          <el-select
-            v-model="searchForm.room"
-            placeholder="筛选寝室信息"
-            @change="reloadTableData"
-            clearable>
-            <el-option
-              v-for="item in searchForm.roomOption"
-              :key="item"
-              :value="item">
-            </el-option>
-          </el-select>
-            <el-date-picker
-              v-model="searchForm.repairTime"
-              type="date"
-              value-format="yyyy-MM-dd"
-              placeholder="筛选报修日期"
-              @change="reloadTableData">
-            </el-date-picker>
-          <el-select
-            v-model="searchForm.repairStatus"
-            placeholder="筛选出工信息"
-            @change="reloadTableData"
-            clearable>
-            <el-option
-              v-for="item in searchForm.repairOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
+  <div>
+    <el-form :inline="true" class="selectForm">
+      <el-select
+        v-model="searchForm.schoolName"
+        placeholder="筛选学校信息"
+        @change="selectSchool"
+        clearable>
+        <el-option
+          v-for="item in searchForm.schoolOptions"
+          :key="item"
+          :value="item">
+        </el-option>
+      </el-select>
+      <el-select
+        v-model="searchForm.building"
+        placeholder="筛选寝室楼信息"
+        @change="selectBuilding"
+        clearable>
+        <el-option
+          v-for="item in searchForm.buildingOptions"
+          :key="item"
+          :value="item">
+        </el-option>
+      </el-select>
+    <el-select
+      v-model="searchForm.room"
+      placeholder="筛选寝室信息"
+      @change="reloadTableData"
+      clearable>
+      <el-option
+        v-for="item in searchForm.roomOption"
+        :key="item"
+        :value="item">
+      </el-option>
+    </el-select>
+      <el-date-picker
+        v-model="searchForm.repairTime"
+        type="date"
+        value-format="yyyy-MM-dd"
+        placeholder="筛选报修日期"
+        @change="reloadTableData">
+      </el-date-picker>
+    <el-select
+      v-model="searchForm.repairStatus"
+      placeholder="筛选出工信息"
+      @change="reloadTableData"
+      clearable>
+      <el-option
+        v-for="item in searchForm.repairOptions"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value">
+      </el-option>
+    </el-select>
+      <el-button
+        type="primary"
+        @click="downloadTable"
+        icon="el-icon-document"
+        :loading="downloadLoading">
+        下载
+      </el-button>
+    </el-form>
+    <el-table
+      :data="tableData"
+      border
+      stripe
+      height="300px"
+      v-loading="tableLoading"
+      element-loading-text="拼命加载中">
+        <el-table-column prop="schoolName" label="报修学校"></el-table-column>
+        <el-table-column prop="building" label="报修楼层"></el-table-column>
+        <el-table-column prop="room" label="报修寝室"></el-table-column>
+        <el-table-column prop="repairDetail" label="报修详情"></el-table-column>
+        <el-table-column label="报修人" width="80px">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <p>姓名: {{ scope.row.stuName }}</p>
+              <p>联系电话: {{ scope.row.phoneNum }}</p>
+              <div slot="reference" class="name-wrapper">
+                  <el-tag size="medium">{{ scope.row.stuName }}</el-tag>
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column label="报修时间" width="180px">
+            <template slot-scope="scope">
+              <i class="el-icon-time"></i>
+              <span style="margin-left: 2px">{{ scope.row.repairTime }}</span>
+            </template>
+        </el-table-column>
+      <el-table-column prop="repairStatusDesc" label="状态"></el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="scope">
             <el-button
               type="primary"
-              @click="downloadTable"
-              icon="el-icon-document"
-              :loading="downloadLoading">
-              下载
+              @click='editRepairStatus(scope.row)'
+              size="small"
+              icon="el-icon-edit">
+              编辑
             </el-button>
-        </el-form>
-        <el-table
-          :data="tableData"
-          border
-          stripe
-          height="300px"
-          v-loading="tableLoading"
-          element-loading-text="拼命加载中">
-            <el-table-column prop="schoolName" label="报修学校"></el-table-column>
-            <el-table-column prop="building" label="报修楼层"></el-table-column>
-            <el-table-column prop="room" label="报修寝室"></el-table-column>
-            <el-table-column prop="repairDetail" label="报修详情"></el-table-column>
-            <el-table-column label="报修人" width="80px">
-                <template slot-scope="scope">
-                    <el-popover trigger="hover" placement="top">
-                      <p>姓名: {{ scope.row.stuName }}</p>
-                      <p>联系电话: {{ scope.row.phoneNum }}</p>
-                      <div slot="reference" class="name-wrapper">
-                          <el-tag size="medium">{{ scope.row.stuName }}</el-tag>
-                      </div>
-                    </el-popover>
-                </template>
-            </el-table-column>
-            <el-table-column label="报修时间" width="180px">
-                <template slot-scope="scope">
-                    <i class="el-icon-time"></i>
-                    <span style="margin-left: 2px">{{ scope.row.repairTime }}</span>
-                </template>
-            </el-table-column>
-          <el-table-column prop="repairStatusDesc" label="状态"></el-table-column>
-            <el-table-column label="操作">
-                <template slot-scope="scope">
-                    <el-button
-                      type="primary"
-                      @click='editRepairStatus(scope.row)'
-                      size="small"
-                      icon="el-icon-edit">
-                      编辑
-                    </el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <el-pagination
-          @current-change="currentChange"
-          @size-change="sizeChange"
-          :page-sizes="[5, 10,15, 20]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total=pagination.total>
-        </el-pagination>
-    </div>
+          </template>
+        </el-table-column>
+    </el-table>
+    <el-pagination
+      @current-change="currentChange"
+      @size-change="sizeChange"
+      :page-sizes="[5, 10,15, 20]"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total=pagination.total>
+    </el-pagination>
+  </div>
 </template>
 
 <script>

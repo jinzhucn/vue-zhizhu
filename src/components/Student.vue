@@ -1,147 +1,147 @@
 <template>
-    <div>
-        <el-form :inline="true" class="selectForm">
-            <el-select
-              v-model="searchForm.schoolName"
-              placeholder="筛选学校信息"
-              clearable
-              @change="selectSchool">
-                <el-option
-                  v-for="item in searchForm.schoolOptions"
-                  :key="item"
-                  :value="item">
-                </el-option>
-            </el-select>
-            <el-select
-              v-model="searchForm.building"
-              placeholder="筛选楼层信息"
-              clearable
-              @change="selectBuilding">
-                <el-option
-                  v-for="item in searchForm.buildingOptions"
-                  :key="item"
-                  :value="item">
-                </el-option>
-            </el-select>
-            <el-select
-              v-model="searchForm.room"
-              placeholder="筛选寝室信息"
-              clearable
-              @change="selectRoom">
-                <el-option
-                  v-for="item in searchForm.roomOptions"
-                  :key="item"
-                  :value="item">
-                </el-option>
-            </el-select>
+  <div>
+      <el-form :inline="true" class="selectForm">
+        <el-select
+          v-model="searchForm.schoolName"
+          placeholder="筛选学校信息"
+          clearable
+          @change="selectSchool">
+            <el-option
+              v-for="item in searchForm.schoolOptions"
+              :key="item"
+              :value="item">
+            </el-option>
+        </el-select>
+        <el-select
+          v-model="searchForm.building"
+          placeholder="筛选楼层信息"
+          clearable
+          @change="selectBuilding">
+            <el-option
+              v-for="item in searchForm.buildingOptions"
+              :key="item"
+              :value="item">
+            </el-option>
+        </el-select>
+        <el-select
+          v-model="searchForm.room"
+          placeholder="筛选寝室信息"
+          clearable
+          @change="selectRoom">
+            <el-option
+              v-for="item in searchForm.roomOptions"
+              :key="item"
+              :value="item">
+            </el-option>
+        </el-select>
+        <el-button
+          type="primary"
+          @click="downloadTable"
+          icon="el-icon-document"
+          :loading="downloadLoading">
+          下载
+        </el-button>
+      </el-form>
+      <el-table
+        :data="tableData"
+        stripe
+        border
+        height="300px"
+        v-loading="tableLoading"
+        element-loading-text="拼命加载中">
+        <el-table-column prop="schoolName" label="学校"></el-table-column>
+        <el-table-column prop="college" label="学院"></el-table-column>
+        <el-table-column prop="major" label="专业"></el-table-column>
+        <el-table-column prop="stuid" label="身份证号" width="185px"></el-table-column>
+        <el-table-column prop="stuName" label="姓名" width="90px"></el-table-column>
+        <el-table-column prop="gender" label="性别" width="65px"></el-table-column>
+        <el-table-column prop="phoneNum" label="手机号" width="140px"></el-table-column>
+        <el-table-column prop="building" label="寝室楼"></el-table-column>
+        <el-table-column prop="room" label="寝室号" width="70px"></el-table-column>
+        <el-table-column label="操作" width="200px">
+          <template slot-scope="scope">
             <el-button
               type="primary"
-              @click="downloadTable"
-              icon="el-icon-document"
-              :loading="downloadLoading">
-              下载
+              size="small"
+              @click="editStudent(scope.row)"
+              icon="el-icon-edit">
+              编辑
             </el-button>
+              <el-button
+                type="danger"
+                size="small"
+                @click="deleteRow(scope.row)"
+                icon="el-icon-delete">
+                删除
+              </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+        @current-change="currentChange"
+        @size-change="sizeChange"
+        :page-sizes="[5, 10, 15, 20]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total=pagination.total>
+      </el-pagination>
+      <el-dialog
+        title="编辑学生信息"
+        :visible.sync="dialogVisible"
+        width="400px">
+        <el-form
+          ref="dialogForm"
+          :rules="rules"
+          :model="dialogForm"
+          label-width="120px">
+          <el-form-item label="姓名">
+            <label>{{dialogForm.stuName}}</label>
+          </el-form-item>
+          <el-form-item label="身份证号">
+            <label>{{dialogForm.stuid}}</label>
+          </el-form-item>
+          <el-form-item label="联系方式">
+            <label>{{dialogForm.phoneNum}}</label>
+          </el-form-item>
+          <el-form-item label="性别">
+            <label>{{dialogForm.gender}}</label>
+          </el-form-item>
+          <el-form-item label="学校">
+            <label>{{dialogForm.schoolName}}</label>
+          </el-form-item>
+          <el-form-item label="学院">
+            <label>{{dialogForm.college}}</label>
+          </el-form-item>
+          <el-form-item label="专业">
+            <label>{{dialogForm.major}}</label>
+          </el-form-item>
+          <el-form-item label="寝室楼" prop="building" class="input-item">
+            <el-select
+              v-model="dialogForm.building"
+              placeholder="请选择寝室楼"
+              @change="selectDialogBuilding">
+              <el-option
+                v-for="item in dialogForm.buildingOptions"
+                :value="item"
+                :key="item">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="寝室号" prop="room" class="input-item">
+            <el-select v-model="dialogForm.room" placeholder="请选择寝室号">
+              <el-option
+                v-for="item in dialogForm.roomOptions"
+                :value="item"
+                :key="item">
+              </el-option>
+            </el-select>
+          </el-form-item>
         </el-form>
-        <el-table
-          :data="tableData"
-          stripe
-          border
-          height="300px"
-          v-loading="tableLoading"
-          element-loading-text="拼命加载中">
-            <el-table-column prop="schoolName" label="学校"></el-table-column>
-            <el-table-column prop="college" label="学院"></el-table-column>
-            <el-table-column prop="major" label="专业"></el-table-column>
-            <el-table-column prop="stuid" label="身份证号" width="185px"></el-table-column>
-            <el-table-column prop="stuName" label="姓名" width="90px"></el-table-column>
-            <el-table-column prop="gender" label="性别" width="65px"></el-table-column>
-            <el-table-column prop="phoneNum" label="手机号" width="140px"></el-table-column>
-            <el-table-column prop="building" label="寝室楼"></el-table-column>
-            <el-table-column prop="room" label="寝室号" width="70px"></el-table-column>
-            <el-table-column label="操作" width="200px">
-                <template slot-scope="scope">
-                  <el-button
-                    type="primary"
-                    size="small"
-                    @click="editStudent(scope.row)"
-                    icon="el-icon-edit">
-                    编辑
-                  </el-button>
-                    <el-button
-                      type="danger"
-                      size="small"
-                      @click="deleteRow(scope.row)"
-                      icon="el-icon-delete">
-                      删除
-                    </el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-        <el-pagination
-          @current-change="currentChange"
-          @size-change="sizeChange"
-          :page-sizes="[5, 10, 15, 20]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total=pagination.total>
-        </el-pagination>
-        <el-dialog
-          title="编辑学生信息"
-          :visible.sync="dialogVisible"
-          width="400px">
-          <el-form
-            ref="dialogForm"
-            :rules="rules"
-            :model="dialogForm"
-            label-width="120px">
-            <el-form-item label="姓名">
-              <label>{{dialogForm.stuName}}</label>
-            </el-form-item>
-            <el-form-item label="身份证号">
-              <label>{{dialogForm.stuid}}</label>
-            </el-form-item>
-            <el-form-item label="联系方式">
-              <label>{{dialogForm.phoneNum}}</label>
-            </el-form-item>
-            <el-form-item label="性别">
-              <label>{{dialogForm.gender}}</label>
-            </el-form-item>
-            <el-form-item label="学校">
-              <label>{{dialogForm.schoolName}}</label>
-            </el-form-item>
-            <el-form-item label="学院">
-              <label>{{dialogForm.college}}</label>
-            </el-form-item>
-            <el-form-item label="专业">
-              <label>{{dialogForm.major}}</label>
-            </el-form-item>
-            <el-form-item label="寝室楼" prop="building" class="input-item">
-              <el-select
-                v-model="dialogForm.building"
-                placeholder="请选择寝室楼"
-                @change="selectDialogBuilding">
-                <el-option
-                  v-for="item in dialogForm.buildingOptions"
-                  :value="item"
-                  :key="item">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="寝室号" prop="room" class="input-item">
-              <el-select v-model="dialogForm.room" placeholder="请选择寝室号">
-                <el-option
-                  v-for="item in dialogForm.roomOptions"
-                  :value="item"
-                  :key="item">
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="updateStudent">确 定</el-button>
-          </div>
-        </el-dialog>
-    </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="updateStudent">确 定</el-button>
+        </div>
+      </el-dialog>
+  </div>
 </template>
 
 <script>

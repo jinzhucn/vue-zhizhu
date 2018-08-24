@@ -1,26 +1,26 @@
 <template>
-    <div class='menu'>
-        <el-menu
-          :default-active="$route.path"
-          router>
-            <el-menu-item index="/index/student">
-                <i class="fa fa-user-o"></i>
-                学生信息
-            </el-menu-item>
-            <el-menu-item index="/index/repair">
-                <i class="fa fa-wrench"></i>
-                我的报修
-            </el-menu-item>
-            <el-menu-item index="/index/dormitory">
-                <i class="fa fa-bed"></i>
-                寝室管理
-            </el-menu-item>
-            <el-menu-item index="/index/problem">
-                <i class="fa fa-server"></i>
-                问题反馈
-            </el-menu-item>
-        </el-menu>
-    </div>
+  <div class='menu'>
+    <el-menu
+      :default-active="$route.path"
+      router>
+      <el-menu-item index="/index/student">
+        <i class="fa fa-user-o"></i>
+        学生信息
+      </el-menu-item>
+      <el-menu-item index="/index/repair">
+        <i class="fa fa-wrench"></i>
+        我的报修
+      </el-menu-item>
+      <el-menu-item index="/index/dormitory">
+        <i class="fa fa-bed"></i>
+        寝室管理
+      </el-menu-item>
+      <el-menu-item index="/index/problem">
+        <i class="fa fa-server"></i>
+        问题反馈
+      </el-menu-item>
+    </el-menu>
+  </div>
 </template>
 
 <script>
